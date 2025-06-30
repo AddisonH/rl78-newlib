@@ -233,6 +233,7 @@ force_eval_double (double x)
 {
   volatile double y = x;
 }
+#pragma GCC diagnostic push
 #pragma GCC diagnostic pop
 #endif
 

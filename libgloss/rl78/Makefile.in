@@ -18,6 +18,8 @@ objdir = .
 srcroot = $(srcdir)/../..
 objroot = $(objdir)/../..
 
+objtype=elf-
+
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 
@@ -39,6 +41,15 @@ INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 
+NANO_SCRIPTS=nano.specs
+NANO_INSTALL=install-nano
+
+LNOSYS_SCRIPTS=lnosys.specs
+LNOSYS_INSTALL=install-lnosys
+
+SIM_SCRIPTS=sim.specs
+SIM_INSTALL=install-sim
+
 SHELL = /bin/sh
 
 mkinstalldirs = $(SHELL) $(srcroot)/mkinstalldirs
@@ -58,8 +69,11 @@ OBJCOPY = `if [ -f ${objroot}/../binutils/objcopy ] ; \
 	then echo ${objroot}/../binutils/objcopy ; \
 	else t='$(program_transform_name)'; echo objcopy | sed -e $$t ; fi`
 
-SCRIPTS = $(srcdir)/rl78.ld $(srcdir)/rl78-sim.ld
+SCRIPTS = $(srcdir)/rl78.ld $(srcdir)/rl78-sim.ld $(srcdir)/rl78-frenesas-extensions.ld $(srcdir)/rl78_sim_text_after_mirror_and_modelinfo.ld
+SCRIPTS += $(srcdir)/rl78-far-data.ld $(srcdir)/rl78-sim-far-data.ld $(srcdir)/rl78_sim_text_after_mirror_and_mi_far_data.ld
 CRT = gcrt0.o crt0.o crtn.o
+SCRIPTS += $(srcdir)/g10-common.ld $(srcdir)/g12-common.ld $(srcdir)/R5F102x6.ld $(srcdir)/R5F10Yx4.ld
+CRT += crt0-min.o
 SIM_BSP = libsim.a
 LIBNOSYS = ../libnosys/libnosys.a
 SIM_OBJS = \
@@ -95,7 +109,7 @@ SIM_OBJS = \
 
 # Override .S.o rule to pass assembler debugging flags
 .S.o:
-	$(CC) -Wa,-gdwarf2 -Wa,-I$(srcdir) $(CFLAGS_FOR_TARGET) $(INCLUDES) $(CFLAGS) -c $<
+	$(CC) -Wa, -Wa,-I$(srcdir) $(CFLAGS_FOR_TARGET) $(INCLUDES) $(CFLAGS) -c $<
 
 all: $(CRT) $(SIM_BSP) copy_scripts_to_objdir
 
@@ -136,7 +150,7 @@ unlink.o : $(SDEPS)
 utime.o : $(SDEPS)
 write.o : $(SDEPS)
 
-install: $(CRT) $(SIM_BSP) $(SCRIPTS)
+install: $(CRT) $(SIM_BSP) $(SCRIPTS) ${NANO_INSTALL} ${SIM_INSTALL} ${LNOSYS_INSTALL}
 	${mkinstalldirs} ${DESTDIR}${tooldir}/lib${MULTISUBDIR}
 	for c in $(CRT) $(SIM_BSP); do \
 	  $(INSTALL_DATA) $$c $(DESTDIR)$(tooldir)/lib${MULTISUBDIR}/$$c ;\
@@ -145,6 +159,15 @@ install: $(CRT) $(SIM_BSP) $(SCRIPTS)
 	  b=`basename $$c`; \
 	  $(INSTALL_DATA) $$c $(DESTDIR)$(tooldir)/lib${MULTISUBDIR}/$$b ;\
 	done
+
+install-nano:
+	set -e; for x in ${NANO_SCRIPTS}; do ${INSTALL_DATA} ${srcdir}/${objtype}$$x $(DESTDIR)${tooldir}/lib${MULTISUBDIR}/$$x; done
+
+install-lnosys:
+	set -e; for x in ${LNOSYS_SCRIPTS}; do ${INSTALL_DATA} ${srcdir}/${objtype}$$x $(DESTDIR)${tooldir}/lib${MULTISUBDIR}/$$x; done
+
+install-sim:
+	set -e; for x in ${SIM_SCRIPTS}; do ${INSTALL_DATA} ${srcdir}/${objtype}$$x $(DESTDIR)${tooldir}/lib${MULTISUBDIR}/$$x; done
 
 clean mostlyclean:
 	rm -f *.o *.a

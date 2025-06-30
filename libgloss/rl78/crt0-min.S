@@ -1,0 +1,302 @@
+/* Copyright (c) 2011 Red Hat Incorporated.
+   All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+     Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+
+     Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+     The name of Red Hat Incorporated may not be used to endorse
+     or promote products derived from this software without specific
+     prior written permission.
+
+   This software is provided by the copyright holders and contributors
+   "AS IS" and any express or implied warranties, including, but not
+   limited to, the implied warranties of merchantability and fitness for
+   a particular purpose are disclaimed.  In no event shall Red Hat
+   incorporated be liable for any direct, indirect, incidental, special,
+   exemplary, or consequential damages (including, but not limited to,
+   procurement of substitute goods or services; loss of use, data, or
+   profits; or business interruption) however caused and on any theory of
+   liability, whether in contract, strict liability, or tort (including
+   negligence or otherwise) arising in any way out of the use of this
+   software, even if advised of the possibility of such damage.  */
+
+#include "rl78-sys.h"
+
+	.section ".vec","a"
+	.short	_start
+
+	.section ".ivec","a"
+	.macro	_iv	x
+	.weak	\x
+	.short	\x
+	.endm
+#define IV(x) _iv ___vector_##x##_
+#define IVx() .short 0
+
+	/* To use a vector, simply define a global function named foo_handler()
+	   for any IV(foo) listed below (i.e. tm05_handler) */
+
+	.global	_interrupt_vector_table
+_interrupt_vector_table:
+	IV(4)
+	IV(6)
+	IV(8)
+	IV(a)
+	IV(c)
+	IV(e)
+	IV(10)
+	IV(12)
+
+	IV(14)
+	IV(16)
+	IV(18)
+	IV(1a)
+	IV(1c)
+	IV(1e)
+	IV(20)
+	IV(22)
+
+	IV(24)
+	IV(26)
+	IV(28)
+	IV(2a)
+	IV(2c)
+	IV(2e)
+	IV(30)
+	IV(32)
+
+	IV(34)
+	IV(36)
+	IV(38)
+	IV(3a)
+	IV(3c)
+	IV(3e)
+	IV(40)
+	IV(42)
+
+	IV(44)
+	IV(46)
+	IV(48)
+	IV(4a)
+	IV(4c)
+	IV(4e)
+	IV(50)
+	IV(52)
+
+	IV(54)
+	IV(56)
+	IV(58)
+	IV(5a)
+	IV(5c)
+	IV(5e)
+	IV(60)
+	IV(62)
+
+	IV(64)
+	IV(66)
+	IV(68)
+	IV(6a)
+	IV(6c)
+	IV(6e)
+	IVx()
+	IVx()
+
+	IVx()
+	IVx()
+	IVx()
+	IVx()
+	IVx()
+	IV(7e)
+	/* Note: 126 vectors */
+
+
+	.weak	__rl78_option_byte_0
+	.weak	__rl78_option_byte_1
+	.weak	__rl78_option_byte_2
+	.weak	__rl78_option_byte_3
+__rl78_option_byte_0 = 0x6e
+__rl78_option_byte_1 = 0xff
+__rl78_option_byte_2 = 0xe8
+__rl78_option_byte_3 = 0x85
+
+	.section ".option_byte", "a"
+	.byte	__rl78_option_byte_0
+	.byte	__rl78_option_byte_1
+	.byte	__rl78_option_byte_2
+	.byte	__rl78_option_byte_3
+
+	.text
+
+	.global _start
+	.type	_start, @function
+_start:
+	movw	sp, #__stack
+
+;; block move to initialize .data
+	movw    ax, #HIGHW(__romdatastart)
+	mov     a, x
+	mov     es, a
+	movw	bc, #LOWW(__romdatacopysize)
+1:
+	movw	ax, bc
+	cmpw	ax, #0
+	bz	$1f
+	decw	bc
+	decw	bc
+	movw	ax, es:LOWW(__romdatastart)[bc]
+	movw	LOWW(__datastart)[bc], ax
+	br	$1b
+
+1:
+	movw    ax, #HIGHW(__romdatafstart)
+	mov     a, x
+	mov     es, a
+	movw	bc, #LOWW(__romdatafcopysize)
+1:
+	movw	ax, bc
+	cmpw	ax, #0
+	bz	$1f
+	decw	bc
+	decw	bc
+	movw	ax, es:LOWW(__romdatafstart)[bc]
+	movw	LOWW(__datafstart)[bc], ax
+	br	$1b
+
+1:
+	movw    ax, #HIGHW(__romsdatastart)
+	mov     a, x
+	mov     es, a
+	movw	bc, #LOWW(__romsdatacopysize)
+1:
+	movw	ax, bc
+	cmpw	ax, #0
+	bz	$1f
+	decw	bc
+	decw	bc
+	movw	ax, es:LOWW(__romsdatastart)[bc]
+	movw	LOWW(__sdatastart)[bc], ax
+	br	$1b
+
+1:
+	movw    ax, #HIGHW(__romsaddrstart)
+	mov     a, x
+	mov     es, a
+	movw	bc, #LOWW(__romsaddrcopysize)
+1:
+	movw	ax, bc
+	cmpw	ax, #0
+	bz	$1f
+	decw	bc
+	decw	bc
+	movw	ax, es:LOWW(__romsaddrstart)[bc]
+	movw	LOWW(__saddrstart)[bc], ax
+	br	$1b
+1:
+
+;; block fill to .sbss
+	movw    bc, #LOWW(__sbsssize)
+	movw    ax, #0
+	cmpw    ax, bc
+	bz      $_sbss_zero_done
+1:
+	decw    bc
+	decw    bc
+	movw    LOWW(__sbssstart)[bc], ax
+	cmpw    ax, bc
+	bnz      $1b
+
+_sbss_zero_done:
+
+;; block fill to .bss
+
+	movw    bc, #LOWW(__bsssize)
+	movw    ax, #0
+	cmpw    ax, bc
+	bz      $_bss_zero_done
+1:
+	decw    bc
+	decw    bc
+	movw    LOWW(__bssstart)[bc], ax
+	cmpw    ax, bc
+	bnz      $1b
+
+_bss_zero_done:
+
+;; block fill to .bssf
+
+	movw    bc, #LOWW(__bssfsize)
+	movw    ax, #0
+	cmpw    ax, bc
+	bz      $_bssf_zero_done
+1:
+	decw    bc
+	decw    bc
+	movw    LOWW(__bssfstart)[bc], ax
+	cmpw    ax, bc
+	bnz      $1b
+
+_bssf_zero_done:
+
+	clrw	ax	/* argv */
+	clrw	bc	/* argc */
+	call	!!_main
+
+.LFE2:
+	.global	_exit
+_exit:
+	.global	__exit
+__exit:
+	mov	a, #1		; exit
+	mov	0xFFFFE, #0x42	; syscall
+1:	br	$1b
+
+	.size	_start, . - _start
+
+
+	.section .data
+	.global ___dso_handle
+	.weak   ___dso_handle
+___dso_handle:
+	.long	0
+
+;;; Provide Dwarf unwinding information that will help GDB stop
+;;; backtraces at the right place.  This is stolen from assembly
+;;; code generated by GCC with -dA.
+	.section	.debug_frame,"",@progbits
+.Lframe0:
+	.4byte	.LECIE0-.LSCIE0	; Length of Common Information Entry
+.LSCIE0:
+	.4byte	0xffffffff	; CIE Identifier Tag
+	.byte	0x1	; CIE Version
+	.ascii "\0"	; CIE Augmentation
+	.uleb128 0x1	; CIE Code Alignment Factor
+	.sleb128 -1	; CIE Data Alignment Factor
+	.byte	0xd	; CIE RA Column
+	.byte	0xc	; DW_CFA_def_cfa
+	.uleb128 0xc
+	.uleb128 0x3
+	.byte	0x8d	; DW_CFA_offset, column 0xd
+	.uleb128 0x3
+	.p2align 2
+.LECIE0:
+.LSFDE0:
+	.4byte	.LEFDE0-.LASFDE0	; FDE Length
+.LASFDE0:
+	.4byte	.Lframe0	; FDE CIE offset
+	.4byte	_start		; FDE initial location
+	.4byte	.LFE2 - _start	; FDE address range
+	.byte   0xf     	; DW_CFA_def_cfa_expression
+	.uleb128 1		; length of expression
+	.byte 	0x30		; DW_OP_lit0
+	.p2align 2
+.LEFDE0:
+
+	.text

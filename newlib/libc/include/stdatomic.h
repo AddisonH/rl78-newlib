@@ -30,6 +30,7 @@
 #ifndef _STDATOMIC_H_
 #define	_STDATOMIC_H_
 
+#include <stdint.h>
 #include <sys/cdefs.h>
 #include <sys/_types.h>
 

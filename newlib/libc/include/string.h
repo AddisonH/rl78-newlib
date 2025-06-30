@@ -46,6 +46,94 @@ char 	*strpbrk (const char *, const char *);
 char 	*strrchr (const char *, int);
 size_t	 strspn (const char *, const char *);
 char 	*strstr (const char *, const char *);
+
+#if defined(__RL78__)
+
+#undef __FAR
+#ifdef __FAR_DATA__
+#define __FAR
+#else
+#define __FAR __far
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void __FAR * _COM_memchr_f(const void __FAR *s, int c, size_t n);
+int _COM_memcmp_ff(const void __FAR *s1, const void __FAR *s2, size_t n);
+void __FAR * _COM_memcpy_ff(void __FAR * __restrict s1, const void __FAR * __restrict s2, size_t n);
+void __FAR * _COM_memmove_ff(void __FAR *s1, const void __FAR *s2, size_t n);
+void __FAR * _COM_memset_f(void __FAR *s, int c, size_t n);
+char __FAR * _COM_strcat_ff(char __FAR * __restrict s1, const char __FAR * __restrict s2);
+char __FAR * _COM_strchr_f(const char __FAR *s, int c);
+int _COM_strcmp_ff(const char __FAR *s1, const char __FAR *s2);
+char __FAR * _COM_strcpy_ff(char __FAR * __restrict s1, const char __FAR * __restrict s2);
+size_t _COM_strlen_f(const char __FAR *s);
+char __FAR * _COM_strncat_ff(char __FAR * __restrict s1, const char __FAR * __restrict s2, size_t n);
+int _COM_strncmp_ff(const char __FAR *s1, const char __FAR *s2, size_t n);
+char __FAR * _COM_strncpy_ff(char __FAR * __restrict s1, const char __FAR * __restrict s2, size_t n);
+size_t _COM_strcspn_ff(const char __FAR *s1, const char __FAR *s2);
+char __FAR * _COM_strpbrk_ff(const char __FAR *s1, const char __FAR *s2);
+char __FAR * _COM_strrchr_f(const char __FAR *s, int c);
+size_t _COM_strspn_ff(const char __FAR *s1, const char __FAR *s2);
+char __FAR * _COM_strstr_ff(const char __FAR *s1, const char __FAR *s2);
+
+#ifdef __cplusplus
+} /* extern "C" */
+
+/* in C++, make these available in the std namespace also */
+namespace std {
+using ::_COM_memchr_f;
+using ::_COM_memcmp_ff;
+using ::_COM_memcpy_ff;
+using ::_COM_memmove_ff;
+using ::_COM_memset_f;
+using ::_COM_strcat_ff;
+using ::_COM_strchr_f;
+using ::_COM_strcmp_ff;
+using ::_COM_strcpy_ff;
+using ::_COM_strlen_f;
+using ::_COM_strncat_ff;
+using ::_COM_strncmp_ff;
+using ::_COM_strncpy_ff;
+using ::_COM_strcspn_ff;
+using ::_COM_strpbrk_ff;
+using ::_COM_strrchr_f;
+using ::_COM_strspn_ff;
+using ::_COM_strstr_ff;
+}
+#endif /* __cplusplus */
+
+/* NOTE: the HAVE_CONFIG_H definition is tested b/c we don't want the macros defined
+         when building the lib with -mfar-data
+   TODO: a better solution for this? */
+#if defined(__FAR_ROM__) || (defined(__FAR_DATA__) && !defined(HAVE_CONFIG_H))
+#define memchr(_s, _c, _n)     _COM_memchr_f((_s), (_c), (_n))
+#define memcmp(_s1, _s2, _n)   _COM_memcmp_ff((_s1), (_s2), (_n))
+#define memcpy(_s1, _s2, _n)   _COM_memcpy_ff((_s1), (_s2), (_n))
+#define memmove(_s1, _s2, _n)  _COM_memmove_ff((_s1), (_s2), (_n))
+#define memset(_s, _c, _n)     _COM_memset_f((_s), (_c), (_n))
+#define strcat(_s1, _s2)       _COM_strcat_ff((_s1), (_s2))
+#define strchr(_s, _c)         _COM_strchr_f((_s), (_c))
+#define strcmp(_s1, _s2)       _COM_strcmp_ff((_s1), (_s2))
+#define strcpy(_s1, _s2)       _COM_strcpy_ff((_s1), (_s2))
+#define strlen(_s)             _COM_strlen_f((_s))
+#define strncat(_s1, _s2, _n)  _COM_strncat_ff((_s1), (_s2), (_n))
+#define strncmp(_s1, _s2, _n)  _COM_strncmp_ff((_s1), (_s2), (_n))
+#define strncpy(_s1, _s2, _n)  _COM_strncpy_ff((_s1), (_s2), (_n))
+#define strpbrk(_s1, _s2)      _COM_strpbrk_ff((_s1), (_s2))
+#define strrchr(_s, _c)        _COM_strrchr_f((_s), (_c))
+#define strspn(_s1, _s2)       _COM_strspn_ff((_s1), (_s2))
+#define strstr(_s1, _s2)       _COM_strstr_ff((_s1), (_s2))
+#define strcspn(_s1, _s2)      _COM_strcspn_ff((_s1), (_s2))
+#endif  /* __FAR_ROM__ */
+
+#undef __FAR
+
+#endif  /* __RL78__ */
+
+
 #ifndef _REENT_ONLY
 char 	*strtok (char *__restrict, const char *__restrict);
 #endif

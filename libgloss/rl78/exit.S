@@ -35,8 +35,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	.global	__exit
 	.type	__exit, @function
 __exit:
+	push ax
 	call	!!__rl78_fini
-	mov	a, [sp+4]
+	pop ax
+	mov a, x
 	halt
 	SYSCALL(SYS_exit)
 	.size	__exit, . - __exit

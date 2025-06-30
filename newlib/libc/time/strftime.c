@@ -692,7 +692,7 @@ __strftime (CHAR *s, size_t maxsize, const CHAR *format,
   size_t i, ctloclen;
   CHAR alt;
   CHAR pad;
-  unsigned long width;
+  int width;
   int tzset_called = 0;
 
   const struct lc_time_T *_CurrentTimeLocale = __get_time_locale (locale);
@@ -937,7 +937,7 @@ recurse:
 	    width -= 6;
 	    if (width)
 	      {
-		len = snprintf (fmt, fmtbuf + 32 - fmt, CQ("%lu"), width);
+		len = snprintf (fmt, fmtbuf + 32 - fmt, CQ("%lu"), (unsigned long)width);
 		if (len > 0)
 		  fmt += len;
 	      }
@@ -1272,7 +1272,7 @@ recurse:
 	    width -= 6;
 	    if (width)
 	      {
-		len = snprintf (fmt, fmtbuf + 32 - fmt, CQ("%lu"), width);
+		len = snprintf (fmt, fmtbuf + 32 - fmt, CQ("%lu"), (unsigned long)width);
 		if (len > 0)
 		  fmt += len;
 	      }

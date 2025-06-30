@@ -186,7 +186,11 @@ sulp (U x,
 {
         U u;
         double rv;
-        int i;
+#ifdef __RL78__
+        long int i;
+#else
+		int i;
+#endif
 
         rv = ulp(dval(x));
         if (!scale || (i = 2*P + 1 - ((dword0(x) & Exp_mask) >> Exp_shift)) <= 0)
@@ -1134,7 +1138,11 @@ _strtod_l (struct _reent *ptr, const char *__restrict s00, char **__restrict se,
 		else {
 #ifdef Avoid_Underflow
 			if (scale && y <= 2*P*Exp_msk1) {
-				if (aadj <= 0x7fffffff) {
+#ifndef _DOUBLE_IS_32BITS
+				if ((__int64_t)aadj <= 0x7fffffff) {
+#else
+				if ((Long)aadj <= 0x7fffffff) {
+#endif
 					if ((z = aadj) == 0)
 						z = 1;
 					aadj = z;

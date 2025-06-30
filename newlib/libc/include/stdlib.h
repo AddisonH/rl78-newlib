@@ -32,13 +32,13 @@
 
 _BEGIN_STD_C
 
-typedef struct 
+typedef struct
 {
   int quot; /* quotient */
   int rem; /* remainder */
 } div_t;
 
-typedef struct 
+typedef struct
 {
   long quot; /* quotient */
   long rem; /* remainder */
@@ -341,5 +341,79 @@ _END_STD_C
 #if __SSP_FORTIFY_LEVEL > 0
 #include <ssp/stdlib.h>
 #endif
+
+#if defined(__RL78__)
+
+#undef __FAR
+#ifdef __FAR_DATA__
+#define __FAR
+#else
+#define __FAR __far
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+double _COM_atof_f(const char __FAR *nptr);
+float _COM_atoff_f(const char __FAR *nptr);
+int _COM_atoi_f(const char __FAR *nptr);
+long int _COM_atol_f(const char __FAR *nptr);
+long long int _COM_atoll_f(const char __FAR *nptr);
+double _COM_strtod_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr);
+float _COM_strtof_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr);
+long double _COM_strtold_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr);
+long int _COM_strtol_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr, int base);
+long long int _COM_strtoll_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr, int base);
+unsigned long int _COM_strtoul_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr, int base);
+unsigned long long int _COM_strtoull_ff(const char __FAR * __restrict nptr, char __FAR * __FAR * __restrict endptr, int base);
+void __FAR * _COM_bsearch_f(const void __FAR *key, const void __FAR *base, size_t nmemb, size_t size, int (*compar)(const void __FAR *, const void __FAR *));
+void _COM_qsort_f(void __FAR *base, size_t nmemb, size_t size, int (*compar)(const void __FAR *, const void __FAR *));
+
+#ifdef __cplusplus
+} /* extern "C" */
+
+/* in C++, make these available in the std namespace also */
+namespace std {
+using ::_COM_atof_f;
+using ::_COM_atoff_f;
+using ::_COM_atoi_f;
+using ::_COM_atol_f;
+using ::_COM_atoll_f;
+using ::_COM_strtod_ff;
+using ::_COM_strtof_ff;
+using ::_COM_strtold_ff;
+using ::_COM_strtol_ff;
+using ::_COM_strtoll_ff;
+using ::_COM_strtoul_ff;
+using ::_COM_strtoull_ff;
+using ::_COM_bsearch_f;
+using ::_COM_qsort_f;
+}
+#endif /* __cplusplus */
+
+/* NOTE: the HAVE_CONFIG_H definition is tested b/c we don't want the macros defined
+         when building the lib with -mfar-data
+   TODO: a better solution for this? */
+#if defined(__FAR_ROM__) || (defined(__FAR_DATA__) && !defined(HAVE_CONFIG_H))
+#define atof(nptr) _COM_atof_f((nptr))
+#define atoff(nptr) _COM_atoff_f((nptr))
+#define atoi(nptr) _COM_atoi_f((nptr))
+#define atol(nptr) _COM_atol_f((nptr))
+#define atoll(nptr) _COM_atoll_f((nptr))
+#define strtod(nptr, endptr) _COM_strtod_ff((nptr), (endptr))
+#define strtof(nptr, endptr) _COM_strtof_ff((nptr), (endptr))
+#define strtold(nptr, endptr) _COM_strtold_ff((nptr), (endptr))
+#define strtol(nptr, endptr, base) _COM_strtol_ff((nptr), (endptr), (base))
+#define strtoll(nptr, endptr, base) _COM_strtoll_ff((nptr), (endptr), (base))
+#define strtoul(nptr, endptr, base) _COM_strtoul_ff((nptr), (endptr), (base))
+#define strtoull(nptr, endptr, base) _COM_strtoull_ff((nptr), (endptr), (base))
+#define bsearch(key, base, nmemb, size, compar) _COM_bsearch_f((key), (base), (nmemb), (size), (compar))
+#define qsort(base, nmemb, size, compar) _COM_qsort_f((base), (nmemb), (size), (compar))
+#endif  /* __FAR_ROM__ */
+
+#undef __FAR
+
+#endif  /* __RL78__ */
 
 #endif /* _STDLIB_H_ */

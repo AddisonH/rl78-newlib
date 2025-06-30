@@ -191,7 +191,12 @@ remquo(double x, double y, int *quo)
 fixup:
 	INSERT_WORDS(x,hx,lx);
 	y = fabs(y);
-	if (y < 0x1p-1021) {
+	#ifdef _DOUBLE_IS_32BITS
+      if (y < 0x1p-149)
+    #else
+      if (y < 0x1p-1021)
+    #endif
+	{
 	    if (x+x>y || (x+x==y && (q & 1))) {
 		q++;
 		x-=y;

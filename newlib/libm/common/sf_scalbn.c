@@ -8,7 +8,7 @@
  *
  * Developed at SunPro, a Sun Microsystems, Inc. business.
  * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
+ * software is freely granted, provided that this notice
  * is preserved.
  * ====================================================
  */
@@ -21,6 +21,12 @@
 #define OVERFLOW_INT 50000
 #else
 #define OVERFLOW_INT 30000
+#endif
+
+#if INT_MIN < -50000
+#define UNDERFLOW_INT -50000
+#else
+#define UNDERFLOW_INT -30000
 #endif
 
 #ifdef __STDC__
@@ -53,12 +59,12 @@ tiny   = 1.0e-30;
         if (FLT_UWORD_IS_SUBNORMAL(hx)) {
 	    x *= two25;
 	    GET_FLOAT_WORD(ix,x);
-	    k = ((ix&0x7f800000)>>23) - 25; 
-            if (n< -50000) return tiny*x; 	/*underflow*/
+	    k = ((ix&0x7f800000)>>23) - 25;
+            if (n< UNDERFLOW_INT) return tiny*x; 	/*underflow*/
         }
         if (n > OVERFLOW_INT) 	/* in case integer overflow in n+k */
 	    return huge*copysignf(huge,x);	/*overflow*/
-        k = k+n; 
+        k = k+n;
         if (k > FLT_LARGEST_EXP) return huge*copysignf(huge,x); /* overflow  */
         if (k > 0) 				/* normal result */
 	    {SET_FLOAT_WORD(x,(ix&0x807fffff)|(k<<23)); return x;}

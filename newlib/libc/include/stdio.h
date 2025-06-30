@@ -183,6 +183,13 @@ typedef _ssize_t ssize_t;
 #endif
 #endif
 
+#ifdef __CCRL__
+// Some std functions in CC-RL have __far parameters.
+#define __CCRL_FAR __far
+#else
+#define __CCRL_FAR
+#endif
+
 #if __POSIX_VISIBLE
 char *	ctermid (char *);
 #endif
@@ -203,17 +210,17 @@ int	fprintf (FILE *__restrict, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 2, 3)));
 int	fscanf (FILE *__restrict, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 3)));
-int	printf (const char *__restrict, ...)
+int	printf (const char __CCRL_FAR *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 1, 2)));
-int	scanf (const char *__restrict, ...)
+int	scanf (const char __CCRL_FAR *__restrict, ...)
                _ATTRIBUTE ((__format__ (__scanf__, 1, 2)));
-int	sscanf (const char *__restrict, const char *__restrict, ...)
+int	sscanf (const char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, ...)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 3)));
 int	vfprintf (FILE *__restrict, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 2, 0)));
-int	vprintf (const char *, __VALIST)
+int	vprintf (const char __CCRL_FAR *, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 1, 0)));
-int	vsprintf (char *__restrict, const char *__restrict, __VALIST)
+int	vsprintf (char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 2, 0)));
 int	fgetc (FILE *);
 char *  fgets (char *__restrict, int, FILE *__restrict);
@@ -247,7 +254,7 @@ int	ferror (FILE *);
 void    perror (const char *);
 #ifndef _REENT_ONLY
 FILE *	fopen (const char *__restrict _name, const char *__restrict _type);
-int	sprintf (char *__restrict, const char *__restrict, ...)
+int	sprintf (char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 2, 3)));
 int	remove (const char *);
 int	rename (const char *, const char *);
@@ -269,15 +276,15 @@ int	fcloseall (void);
 #endif
 #ifndef _REENT_ONLY
 #if __ISO_C_VISIBLE >= 1999
-int	snprintf (char *__restrict, size_t, const char *__restrict, ...)
+int	snprintf (char __CCRL_FAR *__restrict, size_t, const char __CCRL_FAR *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 3, 4)));
-int	vsnprintf (char *__restrict, size_t, const char *__restrict, __VALIST)
+int	vsnprintf (char __CCRL_FAR *__restrict, size_t, const char __CCRL_FAR *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 3, 0)));
 int	vfscanf (FILE *__restrict, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 0)));
-int	vscanf (const char *, __VALIST)
+int	vscanf (const char __CCRL_FAR *, __VALIST)
                _ATTRIBUTE ((__format__ (__scanf__, 1, 0)));
-int	vsscanf (const char *__restrict, const char *__restrict, __VALIST)
+int	vsscanf (const char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 0)));
 #endif
 #if __GNU_VISIBLE
@@ -652,7 +659,7 @@ FILE *_fopencookie_r (struct _reent *, void *__cookie,
 
 #ifndef __CUSTOM_FILE_IO__
 /*
- * The __sfoo macros are here so that we can 
+ * The __sfoo macros are here so that we can
  * define function versions in the C library.
  */
 #define       __sgetc_raw_r(__ptr, __f) (--(__f)->_r < 0 ? __srget_r(__ptr, __f) : (int)(*(__f)->_p++))
@@ -661,7 +668,7 @@ FILE *_fopencookie_r (struct _reent *, void *__cookie,
 /*  For a platform with CR/LF, additional logic is required by
   __sgetc_r which would otherwise simply be a macro; therefore we
   use an inlined function.  The function is only meant to be inlined
-  in place as used and the function body should never be emitted.  
+  in place as used and the function body should never be emitted.
 
   There are two possible means to this end when compiling with GCC,
   one when compiling with a standard C99 compiler, and for other
@@ -803,5 +810,56 @@ _END_STD_C
 #if __SSP_FORTIFY_LEVEL > 0
 #include <ssp/stdio.h>
 #endif
+
+#if defined(__RL78__)
+
+#undef __FAR
+#ifdef __FAR_DATA__
+#define __FAR
+#else
+#define __FAR __far
+#endif
+
+_BEGIN_STD_C
+
+char __FAR * _COM_gets_f(char __FAR *s);
+int _COM_puts_f(const char __FAR *s);
+void _COM_perror_f(const char __FAR *s);
+
+#ifdef __CCRL__
+// Extra stdio.h functions provided by CC-RL
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)  /* C99 */
+int printf_tiny(const char __far * restrict format, ...);
+int sprintf_tiny(char __far * restrict s, const char __far * restrict format, ...);
+#else
+int printf_tiny(const char __far *format, ...);
+int sprintf_tiny(char __far *s, const char __far *format, ...);
+#endif
+#endif // __CCRL__
+
+#ifdef __cplusplus
+/* in C++, make these available in the std namespace also */
+namespace std {
+using ::_COM_gets_f;
+using ::_COM_puts_f;
+using ::_COM_perror_f;
+}
+#endif /* __cplusplus */
+
+/* NOTE: the HAVE_CONFIG_H definition is tested b/c we don't want the macros defined
+         when building the lib with -mfar-data
+   TODO: a better solution for this? */
+#if defined(__FAR_ROM__) || (defined(__FAR_DATA__) && !defined(HAVE_CONFIG_H))
+#define gets(_s)     _COM_gets_f((_s))
+#define puts(_s)     _COM_puts_f((_s))
+#define perror(_s)   _COM_perror_f((_s))
+#endif  /* __FAR_ROM__ */
+
+_END_STD_C
+
+#endif  /* __RL78__ */
+
+#undef __FAR
+#undef __CCRL_FAR
 
 #endif /* _STDIO_H_ */

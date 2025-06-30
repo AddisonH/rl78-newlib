@@ -51,8 +51,8 @@ ANSI C, POSIX
 {
   int signbit;
   /* Most significant word, least significant word. */
-  int msw;
-  unsigned int lsw;
+  long msw;
+  unsigned long lsw;
   int exponent_less_1023;
 
   EXTRACT_WORDS(msw, lsw, x);

@@ -31,10 +31,12 @@
 #else
 	if(_LIB_VERSION == _IEEE_) return y;
 
-	if(x < 0.0 && floor(x)==x)
+	if(!finitef(y)) {
+	  if(x < 0.0f && floorf(x)==x)
 	    errno = EDOM;
-	  else if (finite(x))
+	  else if (finitef(x))
 	    errno = ERANGE;
+	}
 	return y;
 #endif
 }

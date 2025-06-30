@@ -10,7 +10,11 @@
 uintptr_t __stack_chk_guard = 0x00000aff; /* 0, 0, '\n', 255  */
 
 #else
+#ifdef __RL78__
+unsigned long __stack_chk_guard = 0;
+#else
 uintptr_t __stack_chk_guard = 0;
+#endif
 
 void
 __attribute__((__constructor__))

@@ -241,7 +241,7 @@ gethex (struct _reent *ptr, const char **sp, const FPI *fpi,
 			L = 0;
 			n = 0;
 			}
-		L |= (__get_hexdig(*s1) & 0x0f) << n;
+		L |= (__ULong)(__get_hexdig(*s1) & 0x0f) << n;
 		n += 4;
 		}
 	*x++ = L;

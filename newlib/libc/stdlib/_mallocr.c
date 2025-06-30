@@ -63,6 +63,7 @@ int _dummy_mallocr = 1;
      set to zero.
   cfree(Void_t* p);
      Equivalent to free(p).
+
   malloc_trim(size_t pad);
      Release all but pad bytes of freed top-most memory back 
      to the system. Return 1 if successful, else 0.
@@ -816,7 +817,11 @@ struct mallinfo {
 
 
 #ifndef DEFAULT_TOP_PAD
+#ifdef __RL78__
+#define DEFAULT_TOP_PAD        (4)
+#else
 #define DEFAULT_TOP_PAD        (0)
+#endif
 #endif
 
 /*
@@ -1565,7 +1570,11 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #define av_ malloc_av_
 #endif
 
+#ifdef __RL78__
+#define NAV             129   /* number of bins */
+#else
 #define NAV             128   /* number of bins */
+#endif
 
 typedef struct malloc_chunk* mbinptr;
 
@@ -1582,8 +1591,13 @@ typedef struct malloc_chunk* mbinptr;
 */
 
 #define top            (bin_at(0)->fd)   /* The topmost chunk */
+#ifdef __RL78__
+/*  On RL78, move the 'last_remainder' as the last bin as the minimum
+    allocation size is 8 bytes so bin_at(1) is the first regular small bin */
+#define last_remainder (bin_at(128))     /* remainder from last split */
+#else
 #define last_remainder (bin_at(1))       /* remainder from last split */
-
+#endif
 
 /*
    Because top initially points to its own bin with initial
@@ -1617,6 +1631,9 @@ STATIC mbinptr av_[NAV * 2 + 2] = {
  IAV(104), IAV(105), IAV(106), IAV(107), IAV(108), IAV(109), IAV(110), IAV(111),
  IAV(112), IAV(113), IAV(114), IAV(115), IAV(116), IAV(117), IAV(118), IAV(119),
  IAV(120), IAV(121), IAV(122), IAV(123), IAV(124), IAV(125), IAV(126), IAV(127)
+#ifdef __RL78__
+ ,IAV(128)
+#endif
 };
 #else
 extern mbinptr av_[NAV * 2 + 2];
@@ -1671,7 +1688,13 @@ extern mbinptr av_[NAV * 2 + 2];
     when all are noticed to be empty during traversal in malloc.
 */
 
+#ifdef __RL78__
+/*  RL78: the 'binblocks' bitvector is 16 bits =>
+          we need double the number of bins per block */
+#define BINBLOCKWIDTH     8   /* bins per block */
+#else
 #define BINBLOCKWIDTH     4   /* bins per block */
+#endif
 
 #define binblocks      (bin_at(0)->size) /* bitvector of nonempty blocks */
 
@@ -2681,7 +2704,7 @@ void fREe(RARG mem) RDECL Void_t* mem;
     if (!(hd & PREV_INUSE))                    /* consolidate backward */
     {
       prevsz = p->prev_size;
-      p = chunk_at_offset(p, -prevsz);
+      p = chunk_at_offset(p, -(intptr_t)prevsz);
       sz += prevsz;
       unlink(p, bck, fwd);
     }
@@ -2701,7 +2724,7 @@ void fREe(RARG mem) RDECL Void_t* mem;
   if (!(hd & PREV_INUSE))                    /* consolidate backward */
   {
     prevsz = p->prev_size;
-    p = chunk_at_offset(p, -prevsz);
+    p = chunk_at_offset(p, -(intptr_t)prevsz);
     sz += prevsz;
     
     if (p->fd == last_remainder)             /* keep as last_remainder */

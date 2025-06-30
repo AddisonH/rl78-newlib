@@ -89,6 +89,9 @@ tputc (char c)
 int _open_present;
 
 int
+_SYS_write(int fd, char *ptr, int len);
+
+int
 _write(int fd, char *ptr, int len)
 {
   int rv = len;
@@ -101,6 +104,8 @@ _write(int fd, char *ptr, int len)
 
   while (len != 0)
     {
+      if (*ptr == '\n')
+	tputc ('\r');
       tputc (*ptr);
       ptr ++;
       len --;
