@@ -73,14 +73,15 @@ AM_CCASFLAGS = $(AM_CCASFLAGS_$(subst /,_,$(@D))) $(AM_CCASFLAGS_$(subst /,_,$(@
 AM_CPPFLAGS = $(NEWLIB_CFLAGS) $(TARGET_CFLAGS) $(AM_CPPFLAGS_$(subst /,_,$(@D))) $(AM_CPPFLAGS_$(subst /,_,$(@D)_$(<F))) -idirafter $(srcroot)/include
 
 toollib_LIBRARIES = libm.a \
-	libc.a
+	libc.a \
+	librenesas.a
 noinst_DATA += libg.a
 if HAVE_MULTISUBDIR
 BUILD_MULTISUBDIR = $(builddir)$(MULTISUBDIR)
 if HAVE_CRT0
 noinst_DATA += $(BUILD_MULTISUBDIR)/$(CRT0)
 endif
-noinst_DATA += $(BUILD_MULTISUBDIR)/libc.a $(BUILD_MULTISUBDIR)/libm.a
+noinst_DATA += $(BUILD_MULTISUBDIR)/libc.a $(BUILD_MULTISUBDIR)/libm.a $(BUILD_MULTISUBDIR)/librenesas.a
 endif
 
 toollib_DATA = $(CRT0) $(CRT1)
@@ -168,6 +169,22 @@ libm.a: $(libm_a_OBJECTS) $(libm_a_DEPENDENCIES)
 	  $(AR) $(ARFLAGS) $@ $$objs
 	$(AM_V_at)$(RANLIB) $@
 
+librenesas_a_SOURCES =
+librenesas_a_CFLAGS = $(AM_CFLAGS) $(librenesas_a_CFLAGS_$(subst /,_,$(@D))) $(librenesas_a_CFLAGS_$(subst /,_,$(@D)_$(<F)))
+librenesas_a_CCASFLAGS = $(AM_CCASFLAGS) $(librenesas_a_CCASFLAGS_$(subst /,_,$(@D))) $(librenesas_a_CCASFLAGS_$(subst /,_,$(@D)_$(<F)))
+librenesas_a_CPPFLAGS = $(AM_CPPFLAGS) $(librenesas_a_CPPFLAGS_$(subst /,_,$(@D))) $(librenesas_a_CPPFLAGS_$(subst /,_,$(@D)_$(<F)))
+librenesas_a_DEPENDENCIES = 
+## Best to avoid librenesas_a_LIBADD entirely to avoid having 2 independent lists
+## with separate overriding behavior (librenesas_a_OBJECTS is the other).  See the
+## AWK_UNIQUE_OBJS comment aove for more details.
+$(librenesas_a_OBJECTS) $(librenesas_a_LIBADD): stmp-targ-include
+
+librenesas.a: $(librenesas_a_OBJECTS) $(librenesas_a_DEPENDENCIES)
+	$(AM_V_at)rm -f $@
+	$(AM_V_AR)objs=`echo $(librenesas_a_OBJECTS) | $(AWK_UNIQUE_OBJS)` || exit $$?; \
+	  $(AR) $(ARFLAGS) $@ $$objs
+	$(AM_V_at)$(RANLIB) $@
+
 if HAVE_MULTISUBDIR
 $(BUILD_MULTISUBDIR):
 	$(AM_V_at)$(MKDIR_P) $@
@@ -185,6 +202,10 @@ $(BUILD_MULTISUBDIR)/libg.a: libg.a ${BUILD_MULTISUBDIR}
 	$(AM_V_GEN)ln $< $@ >/dev/null 2>/dev/null || cp $< $@
 
 $(BUILD_MULTISUBDIR)/libm.a: libm.a $(BUILD_MULTISUBDIR)
+	$(AM_V_at)rm -f $@
+	$(AM_V_GEN)ln $< $@ >/dev/null 2>/dev/null || cp $< $@
+
+$(BUILD_MULTISUBDIR)/librenesas.a: librenesas.a $(BUILD_MULTISUBDIR)
 	$(AM_V_at)rm -f $@
 	$(AM_V_GEN)ln $< $@ >/dev/null 2>/dev/null || cp $< $@
 endif
@@ -448,5 +469,6 @@ include doc/Makefile.inc
 endif
 include libc/Makefile.inc
 include libm/Makefile.inc
+include librenesas/Makefile.inc
 
 .PHONY: $(PHONY)

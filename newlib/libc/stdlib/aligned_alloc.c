@@ -30,6 +30,9 @@
 #include <stdlib.h>
 #include <malloc.h>
 
+#ifndef _memalign_r
+extern void *_memalign_r (struct _reent *, size_t, size_t);
+#endif
 void *
 aligned_alloc (size_t align, size_t size)
 {

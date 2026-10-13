@@ -17,6 +17,7 @@
  * should use scalbn() instead.
  */
 
+#include <limits.h>
 #include "fdlibm.h"
 
 #ifndef _DOUBLE_IS_32BITS

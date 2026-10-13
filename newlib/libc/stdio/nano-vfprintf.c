@@ -548,7 +548,7 @@ _VFPRINTF_R (struct _reent *data,
        *	-- ANSI X3J11
        */
       flag_chars = "#-0+ ";
-      for (; cp = memchr (flag_chars, *fmt, 5); fmt++)
+      for (; (cp = memchr (flag_chars, *fmt, 5)); fmt++)
 	prt_data.flags |= (1 << (cp - flag_chars));
 
       if (prt_data.flags & SPACESGN)

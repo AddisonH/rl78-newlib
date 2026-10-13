@@ -7,7 +7,7 @@
  *
  * Developed at SunSoft, a Sun Microsystems, Inc. business.
  * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
+ * software is freely granted, provided that this notice
  * is preserved.
  * ====================================================
  */
@@ -55,7 +55,7 @@ remquof(float x, float y, int *quo)
 	    q = 0;
 	    goto fixup;	/* |x|<|y| return x or x-y */
 	} else if(hx==hy) {
-	    *quo = 1;
+	    *quo = (sxy ? -1 : 1);
 	    return Zero[(__uint32_t)sx>>31];	/* |x|=|y| return x*0*/
 	}
 

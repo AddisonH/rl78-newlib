@@ -65,6 +65,18 @@ SEEALSO
 
 #ifndef _DOUBLE_IS_32BITS
 
+#if INT_MAX > 50000
+#define OVERFLOW_INT 50000
+#else
+#define OVERFLOW_INT 30000
+#endif
+
+#if INT_MIN < -50000
+#define UNDERFLOW_INT -50000
+#else
+#define UNDERFLOW_INT -30000
+#endif
+
 #ifdef __STDC__
 static const double
 #else
@@ -90,10 +102,10 @@ tiny   = 1.0e-300;
 	    x *= two54; 
 	    GET_HIGH_WORD(hx,x);
 	    k = ((hx&0x7ff00000)>>20) - 54; 
-            if (n< -50000) return tiny*x; 	/*underflow*/
+            if (n< UNDERFLOW_INT) return tiny*x; 	/*underflow*/
 	    }
         if (k==0x7ff) return x+x;		/* NaN or Inf */
-        if (n > 50000) 	/* in case integer overflow in n+k */
+        if (n > OVERFLOW_INT) 	/* in case integer overflow in n+k */
 	    return huge*copysign(huge,x);	/*overflow*/
         k = k+n; 
         if (k >  0x7fe) return huge*copysign(huge,x); /* overflow  */

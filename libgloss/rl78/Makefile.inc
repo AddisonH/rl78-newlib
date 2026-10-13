@@ -12,15 +12,36 @@
 
 multilibtool_DATA += \
 	%D%/rl78.ld \
-	%D%/rl78-sim.ld
+	%D%/rl78-sim.ld \
+	%D%/rl78-frenesas-extensions.ld \
+	%D%/rl78_sim_text_after_mirror_and_modelinfo.ld \
+	%D%/rl78-far-data.ld \
+	%D%/rl78-sim-far-data.ld \
+	%D%/rl78_sim_text_after_mirror_and_mi_far_data.ld \
+	%D%/g10-common.ld \
+	%D%/g12-common.ld \
+	%D%/R5F102x6.ld \
+	%D%/R5F10Yx4.ld
+
+%C%_SPECS = \
+	%D%/nano.specs \
+	%D%/lnosys.specs \
+	%D%/sim.specs
+multilibtool_DATA += $(%C%_SPECS)
+CLEANFILES += $(%C%_SPECS)
+
+%D%/%.specs: %D%/elf-%.specs
+	$(AM_V_GEN)cp $< $@
 
 multilibtool_DATA += \
 	%D%/gcrt0.o \
 	%D%/crt0.o \
+	%D%/crt0-min.o \
 	%D%/crtn.o
 libobjs_a_SOURCES += \
 	%D%/gcrt0.S \
 	%D%/crt0.S \
+	%D%/crt0-min.S \
 	%D%/crtn.S
 
 multilibtool_LIBRARIES += %D%/libsim.a

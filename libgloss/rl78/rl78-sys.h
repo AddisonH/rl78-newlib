@@ -39,8 +39,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 /* The RL78 doesn't really have an "interrupt" upcode, just
 	    BRK, which we emulate exactly.  We use the STOP opcode,
 	    which is a breakpoint in the simulator.  */
-	mov	A, #\number
-	stop
+	mov	a, #\number
+	mov	0xFFFFE, #0x42
+	skc
 	ret
 	.endm
       
@@ -57,7 +58,7 @@ __\name:
 	.global __\name
 _\name:
         .weak _\name
-	mov	r8, #\number
+	movw	ax, #\number
 	ret
 	.endm
 

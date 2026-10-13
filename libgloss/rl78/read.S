@@ -32,4 +32,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rl78-sys.h"
 
-ERR(read)
+/*ERR(read)*/
+S(read)

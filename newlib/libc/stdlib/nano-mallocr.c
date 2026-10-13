@@ -122,7 +122,7 @@
  * to hold a free pointer */
 #define MALLOC_MINSIZE (sizeof(void *))
 #define MALLOC_PAGE_ALIGN (0x1000)
-#define MAX_ALLOC_SIZE (0x80000000U)
+#define MAX_ALLOC_SIZE (0x8000U)
 
 typedef size_t malloc_size_t;
 

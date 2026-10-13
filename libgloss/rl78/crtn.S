@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 	.section	.init,"ax"
-	call	!!_rl78_run_preinit_array
 	call	!!_rl78_run_init_array
 	ret
 	.global	__rl78_init_end

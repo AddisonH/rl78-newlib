@@ -338,6 +338,14 @@ extern intmax_t  wcstoimax_l(const wchar_t *__restrict, wchar_t **_restrict, int
 extern uintmax_t wcstoumax_l(const wchar_t *__restrict, wchar_t **_restrict, int, locale_t);
 #endif
 
+#if defined(__RL78__)
+intmax_t _COM_strtoimax_ff(const char __far * __restrict nptr, char __far * __far * __restrict endptr, int base);
+uintmax_t _COM_strtoumax_ff(const char __far * __restrict nptr, char __far * __far * __restrict endptr, int base);
+
+#define _COM_strtoimax_ff(_nptr, _endptr, _base) _COM_strtoll_ff((_nptr), (_endptr), (_base))
+#define _COM_strtoumax_ff(_nptr, _endptr, _base) _COM_strtoull_ff((_nptr), (_endptr), (_base))
+#endif  /* __RL78__ */
+
 #ifdef __cplusplus
 }
 #endif

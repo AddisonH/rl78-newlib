@@ -35,8 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char *
 _sbrk (int adj)
 {
-  extern char    end;
-  static char *  heap = & end;
+  extern char    _end;
+  static char *  heap = & _end;
   char *         rv = heap;
   char *	 heaptop = (char *) &adj;
 

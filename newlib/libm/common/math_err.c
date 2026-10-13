@@ -53,7 +53,11 @@ xflow (uint32_t sign, double y)
 HIDDEN double
 __math_uflow (uint32_t sign)
 {
-  return xflow (sign, 0x1p-767);
+  #ifdef _DOUBLE_IS_32BITS
+    return xflow (sign, 0x1p-149);
+  #else
+    return xflow (sign, 0x1p-767);
+  #endif
 }
 
 #if WANT_ERRNO_UFLOW
@@ -62,14 +66,22 @@ __math_uflow (uint32_t sign)
 HIDDEN double
 __math_may_uflow (uint32_t sign)
 {
-  return xflow (sign, 0x1.8p-538);
+  #ifdef _DOUBLE_IS_32BITS
+    return xflow (sign, 0x1.8p-149);
+  #else
+    return xflow (sign, 0x1.8p-538);
+  #endif
 }
 #endif
 
 HIDDEN double
 __math_oflow (uint32_t sign)
 {
-  return xflow (sign, 0x1p769);
+#ifdef _DOUBLE_IS_32BITS
+    return xflow (sign, 0x1p127);
+  #else
+    return xflow (sign, 0x1p769);
+  #endif
 }
 
 HIDDEN double

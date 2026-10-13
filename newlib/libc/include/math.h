@@ -236,7 +236,9 @@ extern int __signbitd (double);
  *       taking double arguments still exist for compatibility purposes
  *       (prototypes for them are earlier in this header).  */
 
-#if __GNUC_PREREQ (4, 4)
+//TODO: Review this when updating to a newer version
+
+#if __GNUC_PREREQ (4, 4) && !defined __RX__
   #define fpclassify(__x) (__builtin_fpclassify (FP_NAN, FP_INFINITE, \
 						 FP_NORMAL, FP_SUBNORMAL, \
 						 FP_ZERO, __x))

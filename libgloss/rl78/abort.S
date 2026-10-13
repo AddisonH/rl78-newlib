@@ -36,8 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	.type	_abort, @function
 _abort:
 	/* This is for debuggers.  The simulator stops here too. */
-	brk
-
+	/*SIGABRT has the numeric value of 6.*/
+	movw    ax, #6
+	call    !!_raise
+	mov 	a, #1
+	halt
 	movw	ax, #42
 	push	ax
 	SYSCALL(SYS_kill)
