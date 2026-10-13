@@ -613,6 +613,8 @@ HAVE_LIBM_MACHINE_SPU_FALSE
 HAVE_LIBM_MACHINE_SPU_TRUE
 HAVE_LIBM_MACHINE_SPARC_FALSE
 HAVE_LIBM_MACHINE_SPARC_TRUE
+HAVE_LIBM_MACHINE_RL78_FALSE
+HAVE_LIBM_MACHINE_RL78_TRUE
 HAVE_LIBM_MACHINE_PRU_FALSE
 HAVE_LIBM_MACHINE_PRU_TRUE
 HAVE_LIBM_MACHINE_POWERPC_FALSE
@@ -6388,6 +6390,14 @@ else
   HAVE_LIBM_MACHINE_PRU_FALSE=
 fi
 
+   if test "${libm_machine_dir}" = "rl78"; then
+  HAVE_LIBM_MACHINE_RL78_TRUE=
+  HAVE_LIBM_MACHINE_RL78_FALSE='#'
+else
+  HAVE_LIBM_MACHINE_RL78_TRUE='#'
+  HAVE_LIBM_MACHINE_RL78_FALSE=
+fi
+
    if test "${libm_machine_dir}" = "sparc"; then
   HAVE_LIBM_MACHINE_SPARC_TRUE=
   HAVE_LIBM_MACHINE_SPARC_FALSE='#'
@@ -8095,6 +8105,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_LIBM_MACHINE_PRU_TRUE}" && test -z "${HAVE_LIBM_MACHINE_PRU_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_LIBM_MACHINE_PRU\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_LIBM_MACHINE_RL78_TRUE}" && test -z "${HAVE_LIBM_MACHINE_RL78_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_LIBM_MACHINE_RL78\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_LIBM_MACHINE_SPARC_TRUE}" && test -z "${HAVE_LIBM_MACHINE_SPARC_FALSE}"; then

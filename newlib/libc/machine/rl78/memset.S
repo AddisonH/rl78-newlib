@@ -12,7 +12,8 @@
 ;
 ;---------------------------------------------------------------------
 
-#if !(defined(__FAR_ROM__) || defined(__FAR_DATA__))
+; Byte by byte, for size; memset_speed.c is used otherwise.
+#if !(defined(__FAR_ROM__) || defined(__FAR_DATA__)) && defined(__OPTIMIZE_SIZE__)
 	.file	"memset.S"
 	.text
 	.global  _memset

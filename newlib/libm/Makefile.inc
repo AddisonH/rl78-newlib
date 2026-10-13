@@ -79,6 +79,9 @@ endif
 if HAVE_LIBM_MACHINE_PRU
 include %D%/machine/pru/Makefile.inc
 endif
+if HAVE_LIBM_MACHINE_RL78
+include %D%/machine/rl78/Makefile.inc
+endif
 if HAVE_LIBM_MACHINE_SPARC
 include %D%/machine/sparc/Makefile.inc
 endif
