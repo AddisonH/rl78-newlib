@@ -183,13 +183,6 @@ typedef _ssize_t ssize_t;
 #endif
 #endif
 
-#ifdef __CCRL__
-// Some std functions in CC-RL have __far parameters.
-#define __CCRL_FAR __far
-#else
-#define __CCRL_FAR
-#endif
-
 #if __POSIX_VISIBLE
 char *	ctermid (char *);
 #endif
@@ -210,17 +203,17 @@ int	fprintf (FILE *__restrict, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 2, 3)));
 int	fscanf (FILE *__restrict, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 3)));
-int	printf (const char __CCRL_FAR *__restrict, ...)
+int	printf (const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 1, 2)));
-int	scanf (const char __CCRL_FAR *__restrict, ...)
+int	scanf (const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__scanf__, 1, 2)));
-int	sscanf (const char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, ...)
+int	sscanf (const char *__restrict, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 3)));
 int	vfprintf (FILE *__restrict, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 2, 0)));
-int	vprintf (const char __CCRL_FAR *, __VALIST)
+int	vprintf (const char *, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 1, 0)));
-int	vsprintf (char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, __VALIST)
+int	vsprintf (char *__restrict, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 2, 0)));
 int	fgetc (FILE *);
 char *  fgets (char *__restrict, int, FILE *__restrict);
@@ -254,7 +247,7 @@ int	ferror (FILE *);
 void    perror (const char *);
 #ifndef _REENT_ONLY
 FILE *	fopen (const char *__restrict _name, const char *__restrict _type);
-int	sprintf (char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, ...)
+int	sprintf (char *__restrict, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 2, 3)));
 int	remove (const char *);
 int	rename (const char *, const char *);
@@ -276,15 +269,15 @@ int	fcloseall (void);
 #endif
 #ifndef _REENT_ONLY
 #if __ISO_C_VISIBLE >= 1999
-int	snprintf (char __CCRL_FAR *__restrict, size_t, const char __CCRL_FAR *__restrict, ...)
+int	snprintf (char *__restrict, size_t, const char *__restrict, ...)
                _ATTRIBUTE ((__format__ (__printf__, 3, 4)));
-int	vsnprintf (char __CCRL_FAR *__restrict, size_t, const char __CCRL_FAR *__restrict, __VALIST)
+int	vsnprintf (char *__restrict, size_t, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__printf__, 3, 0)));
 int	vfscanf (FILE *__restrict, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 0)));
-int	vscanf (const char __CCRL_FAR *, __VALIST)
+int	vscanf (const char *, __VALIST)
                _ATTRIBUTE ((__format__ (__scanf__, 1, 0)));
-int	vsscanf (const char __CCRL_FAR *__restrict, const char __CCRL_FAR *__restrict, __VALIST)
+int	vsscanf (const char *__restrict, const char *__restrict, __VALIST)
                _ATTRIBUTE ((__format__ (__scanf__, 2, 0)));
 #endif
 #if __GNU_VISIBLE
@@ -826,17 +819,6 @@ char __FAR * _COM_gets_f(char __FAR *s);
 int _COM_puts_f(const char __FAR *s);
 void _COM_perror_f(const char __FAR *s);
 
-#ifdef __CCRL__
-// Extra stdio.h functions provided by CC-RL
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)  /* C99 */
-int printf_tiny(const char __far * restrict format, ...);
-int sprintf_tiny(char __far * restrict s, const char __far * restrict format, ...);
-#else
-int printf_tiny(const char __far *format, ...);
-int sprintf_tiny(char __far *s, const char __far *format, ...);
-#endif
-#endif // __CCRL__
-
 #ifdef __cplusplus
 /* in C++, make these available in the std namespace also */
 namespace std {
@@ -860,6 +842,5 @@ _END_STD_C
 #endif  /* __RL78__ */
 
 #undef __FAR
-#undef __CCRL_FAR
 
 #endif /* _STDIO_H_ */
